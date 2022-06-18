@@ -35,7 +35,8 @@ namespace FinancialChat.Infrastructure.Test.DB
       return new List<ChatRoom>
       {
         new ChatRoom {Name = "room-1"},        
-        new ChatRoom {Name = "room-2"}
+        new ChatRoom {Name = "room-2"},
+        new ChatRoom { Name = "room-3"}
       };
     }
   }

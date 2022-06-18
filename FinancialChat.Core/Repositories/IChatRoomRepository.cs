@@ -5,8 +5,8 @@ namespace FinancialChat.Core.Repositories
   public interface IChatRoomRepository
   {
     Task<IEnumerable<ChatRoom>> GetAll();
-    Task Insert(ChatRoom chatRoom);
-    Task Update(ChatRoom chatRoom);
-    Task Delete(ChatRoom chatRoom);
+    Task<ChatRoom> Insert(ChatRoom chatRoom);
+    Task<int> Update(ChatRoom chatRoom);
+    Task<int> Delete(int id);
   }
 }
