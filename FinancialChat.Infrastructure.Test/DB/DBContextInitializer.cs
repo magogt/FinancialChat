@@ -6,14 +6,16 @@ namespace FinancialChat.Infrastructure.Test.DB
 {
   internal static class DBContextInitializer
   {
+    static Infrastructure.DB.DbContext? context;
     public static Infrastructure.DB.DbContext GetContext()
     {
+      if (context != null) return context;
 
-    DbContextOptions<Infrastructure.DB.DbContext> options;
-    var builder = new DbContextOptionsBuilder<Infrastructure.DB.DbContext>();
-    builder.UseInMemoryDatabase("chat-app");
+      DbContextOptions<Infrastructure.DB.DbContext> options;
+      var builder = new DbContextOptionsBuilder<Infrastructure.DB.DbContext>();
+      builder.UseInMemoryDatabase("chat-app");
       options = builder.Options;
-      var context = new Infrastructure.DB.DbContext(options);
+      context = new Infrastructure.DB.DbContext(options);
       context.AddRange(GetChatRooms());
       context.AddRange(GetChatMessages());
       context.SaveChanges();
@@ -34,7 +36,7 @@ namespace FinancialChat.Infrastructure.Test.DB
     {
       return new List<ChatRoom>
       {
-        new ChatRoom {Name = "room-1"},        
+        new ChatRoom {Name = "room-1"},
         new ChatRoom {Name = "room-2"},
         new ChatRoom { Name = "room-3"}
       };

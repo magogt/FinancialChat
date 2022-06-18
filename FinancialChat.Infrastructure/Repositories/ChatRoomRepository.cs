@@ -15,22 +15,39 @@ namespace FinancialChat.Infrastructure.Repositories
 
     public async Task<int> Delete(int id)
     {
-      throw new NotImplementedException();
+      var result = 0;
+      var item = ctx.ChatRooms.FirstOrDefault(x => x.Id == id);
+      if (item != null)
+      {
+        ctx.Remove(item);
+        result = await ctx.SaveChangesAsync();
+      }
+      return result;
     }
 
-    public async Task<IEnumerable<ChatRoom>> GetAll()
+    public Task<IEnumerable<ChatRoom>> GetAll()
     {
-      throw new NotImplementedException();
+      return Task.FromResult( ctx.ChatRooms.AsEnumerable());
     }
 
     public async Task<ChatRoom> Insert(ChatRoom chatRoom)
     {
-      throw new NotImplementedException();
+      ctx.Add(chatRoom);
+      await ctx.SaveChangesAsync();
+      return chatRoom;
     }
 
     public async Task<int> Update(ChatRoom chatRoom)
     {
-      throw new NotImplementedException();
+      var result = 0;
+      var id = chatRoom.Id;
+      var item = ctx.ChatRooms.FirstOrDefault(x => x.Id == id);
+      if (item != null)
+      {
+        item.Name = chatRoom.Name;        
+        result = await ctx.SaveChangesAsync();
+      }
+      return result;
     }
   }
 }

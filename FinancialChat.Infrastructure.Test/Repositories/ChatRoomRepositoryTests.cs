@@ -18,14 +18,22 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
       _repository = new ChatRoomRepository(_ctx);
     }
 
+    [TestMethod()]
+    public async Task GetAll()
+    {
+      var result = await _repository.GetAll();
+      Assert.IsNotNull(result);
+      Assert.AreEqual(2, result.Count());
+    }
+
 
     [TestMethod()]
-    public async Task DeleteTestAsync()
+    public async Task DeleteTest()
     {
       var id = 3;
       var count = await _repository.Delete(id);
       Assert.AreEqual(1, count);
-      Assert.IsNull(_ctx.ChatMessages.FirstOrDefault(x => x.Id == id));
+      Assert.IsNull(_ctx.ChatRooms.FirstOrDefault(x => x.Id == id));
     }
 
     [TestMethod()]
