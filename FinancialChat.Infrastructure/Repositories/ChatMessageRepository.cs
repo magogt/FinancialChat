@@ -1,28 +1,56 @@
 ﻿using FinancialChat.Core.Entities;
 using FinancialChat.Core.Repositories;
+using FinancialChat.Infrastructure.DB;
 
 namespace FinancialChat.Infrastructure.Repositories
 {
   public class ChatMessageRepository : IChatMessageRepository
   {
-    public Task Delete(ChatMessage chatMessage)
+    private readonly DbContext ctx;
+
+    public ChatMessageRepository(DbContext ctx)
     {
-      throw new NotImplementedException();
+      this.ctx = ctx;
+    }
+
+    public async Task<int> Delete(int id)
+    {
+      var result = 0;
+      var item = ctx.ChatMessages.FirstOrDefault(x => x.Id == id);
+      if (item != null)
+      {
+        ctx.Remove(item);
+        result = await ctx.SaveChangesAsync();
+      }
+      return result;
     }
 
     public Task<IEnumerable<ChatMessage>> GetByRoom(string room)
     {
-      throw new NotImplementedException();
+      return Task.FromResult(ctx.ChatMessages.Where(x => x.RoomName == room).AsEnumerable());
     }
 
-    public Task Insert(ChatMessage chatMessage)
+    public async Task<ChatMessage> Insert(ChatMessage chatMessage)
     {
-      throw new NotImplementedException();
+      ctx.Add(chatMessage);
+      await ctx.SaveChangesAsync();
+      return chatMessage;
     }
 
-    public Task Update(ChatMessage chatMessage)
+    public async Task<int> Update(ChatMessage chatMessage)
     {
-      throw new NotImplementedException();
+      var result = 0;
+      var id = chatMessage.Id;
+      var item = ctx.ChatMessages.FirstOrDefault(x => x.Id == id);
+      if (item != null)
+      {
+        item.Message = chatMessage.Message;
+        item.Date = chatMessage.Date;
+        item.RoomName = chatMessage.RoomName;
+        item.User = chatMessage.User;
+        result = await ctx.SaveChangesAsync();
+      }
+      return result;
     }
   }
 }
