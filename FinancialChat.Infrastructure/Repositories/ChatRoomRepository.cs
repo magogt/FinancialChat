@@ -25,9 +25,14 @@ namespace FinancialChat.Infrastructure.Repositories
       return result;
     }
 
+    public Task<ChatRoom> Get(int roomId)
+    {
+      return Task.FromResult(ctx.ChatRooms.FirstOrDefault(x => x.Id == roomId));
+    }
+
     public Task<IEnumerable<ChatRoom>> GetAll()
     {
-      return Task.FromResult( ctx.ChatRooms.AsEnumerable());
+      return Task.FromResult(ctx.ChatRooms.AsEnumerable());
     }
 
     public async Task<ChatRoom> Insert(ChatRoom chatRoom)
@@ -44,7 +49,7 @@ namespace FinancialChat.Infrastructure.Repositories
       var item = ctx.ChatRooms.FirstOrDefault(x => x.Id == id);
       if (item != null)
       {
-        item.Name = chatRoom.Name;        
+        item.Name = chatRoom.Name;
         result = await ctx.SaveChangesAsync();
       }
       return result;

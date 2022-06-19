@@ -26,9 +26,9 @@ namespace FinancialChat.Infrastructure.Test.DB
     {
       return new List<ChatMessage>
       {
-        new ChatMessage {Message =  "Hello World", Date = new DateTime(), RoomName = "room-1", User = ""},
-        new ChatMessage {Message =  "Hello Room 1", Date = new DateTime(), RoomName = "room-1", User = ""},
-        new ChatMessage {Message =  "Hello Room 2", Date = new DateTime(), RoomName = "room-2", User = ""}
+        new ChatMessage {Message =  "Hello World", Date = new DateTime(), RoomId = 1, User = ""},
+        new ChatMessage {Message =  "Hello Room 1", Date = new DateTime(), RoomId = 1, User = ""},
+        new ChatMessage {Message =  "Hello Room 2", Date = new DateTime(), RoomId = 2, User = ""}
       };
     }
 

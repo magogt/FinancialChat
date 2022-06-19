@@ -46,7 +46,7 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
       {
         Date = DateTime.Now,
         Message = "Hello test",
-        RoomName = "room-2",
+        RoomId = "room-2",
         User = "test"
       };
       var data = await _repository.Insert(message);
@@ -62,7 +62,7 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
         Id = id,
         Date = DateTime.Now,
         Message = "Hello test modified",
-        RoomName = "room-2",
+        RoomId = "room-2",
         User = "test-modified"
       };
       var count = await _repository.Update(message);

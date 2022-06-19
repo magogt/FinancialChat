@@ -25,9 +25,9 @@ namespace FinancialChat.Infrastructure.Repositories
       return result;
     }
 
-    public Task<IEnumerable<ChatMessage>> GetByRoom(string room)
+    public Task<IEnumerable<ChatMessage>> GetByRoom(int room)
     {
-      return Task.FromResult(ctx.ChatMessages.Where(x => x.RoomName == room).AsEnumerable());
+      return Task.FromResult(ctx.ChatMessages.Where(x => x.RoomId == room).AsEnumerable());
     }
 
     public async Task<ChatMessage> Insert(ChatMessage chatMessage)
@@ -46,7 +46,7 @@ namespace FinancialChat.Infrastructure.Repositories
       {
         item.Message = chatMessage.Message;
         item.Date = chatMessage.Date;
-        item.RoomName = chatMessage.RoomName;
+        item.RoomId = chatMessage.RoomId;
         item.User = chatMessage.User;
         result = await ctx.SaveChangesAsync();
       }

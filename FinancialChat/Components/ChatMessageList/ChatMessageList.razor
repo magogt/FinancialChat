@@ -1,0 +1,26 @@
+﻿@using FinancialChat.Components.ChatMessageItem
+@using FinancialChat.Core.Entities
+<div class="chat-history">
+    <ul class="m-b-0">
+        @foreach(var m in Messages)
+        {            
+          <ChatMessageItem Message="m"/>
+        }
+    </ul>
+</div>
+
+@code {
+  private IEnumerable<ChatMessage> Messages = new List<ChatMessage>
+      {
+        new ChatMessage {Message =  "Hello World df twert wert wtw ", Date = DateTime.Now, RoomId = 1, User = "mgongora"},
+        new ChatMessage {Message =  "Hello Room 1w etwetw ewetwer ", Date = DateTime.Now, RoomId = 1, User = "jhon"},
+        new ChatMessage {Message =  "Hello Room 2 wetwe wetwert ", Date = DateTime.Now, RoomId = 1, User = "pete"},
+        new ChatMessage {Message =  "Bye Worldw er twet ttet t e", Date = DateTime.Now, RoomId = 1, User = "mgongora"},
+        new ChatMessage {Message =  "Hello Room 1w etwetw ewetwer ", Date = DateTime.Now, RoomId = 1, User = "jhon"},
+        new ChatMessage {Message =  "Hello Room 2 wetwe wetwert ", Date = DateTime.Now, RoomId = 1, User = "pete"},
+        new ChatMessage {Message =  "Bye Worldw er twet ttet t e", Date = DateTime.Now, RoomId = 1, User = "mgongora"},
+        new ChatMessage {Message =  "Hello Room 1w etwetw ewetwer ", Date = DateTime.Now, RoomId = 1, User = "jhon"},
+        new ChatMessage {Message =  "Hello Room 2 wetwe wetwert ", Date = DateTime.Now, RoomId = 1, User = "pete"},
+        new ChatMessage {Message =  "Bye Worldw er twet ttet t e", Date = DateTime.Now, RoomId = 1, User = "mgongora"},
+      };
+}

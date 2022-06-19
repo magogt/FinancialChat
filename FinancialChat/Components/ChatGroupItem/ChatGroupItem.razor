@@ -1,0 +1,13 @@
+﻿@using FinancialChat.Core.Entities
+
+<li class="clearfix active">
+    <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar">
+    <div class="about">
+        <div class="name">@Group?.Name</div>       
+    </div>
+</li>
+
+@code {
+    [Parameter] 
+    public ChatRoom? Group { get; set; }
+}

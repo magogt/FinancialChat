@@ -1,0 +1,21 @@
+﻿@using FinancialChat.Core.Entities
+<li class="clearfix">
+    <div class="message @(IsCurrentUser ? "my-message" : "other-message float-right")">
+        <div class="message-data-user text-start">@Message?.User</div>
+        <div class="message-data-text">@Message?.Message</div>
+        <div class="message-data-time text-end">@Message?.Date</div>
+    </div>
+</li>
+
+@code {
+    [Parameter]
+    public ChatMessage? Message { get; set; }
+    private bool IsCurrentUser
+    {
+        get
+        {
+            return Message?.User == "mgongora";
+        }
+    }
+
+}

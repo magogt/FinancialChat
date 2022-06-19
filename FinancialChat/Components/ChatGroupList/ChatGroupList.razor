@@ -1,0 +1,26 @@
+﻿@using FinancialChat.Components.ChatGroupItem
+@using FinancialChat.Core.Entities
+<div id="plist" class="people-list">
+    <div class="input-group">
+    <span class="input-group-text"><i class="fa fa-search"></i></span>
+    <input type="text" class="form-control" placeholder="Search...">
+    </div>
+    <ul class="list-unstyled chat-list mt-2 mb-0">
+        @if(Rooms != null)
+        {
+            foreach(var r in Rooms)
+            {                
+              <ChatGroupItem Group="r"/>
+            }
+        }
+    </ul>
+</div>
+
+@code {
+  private IEnumerable<ChatRoom> Rooms = new List<ChatRoom>
+      {
+        new ChatRoom {Name = "room-1"},
+        new ChatRoom {Name = "room-2"},
+        new ChatRoom { Name = "room-3"}
+      };
+}
