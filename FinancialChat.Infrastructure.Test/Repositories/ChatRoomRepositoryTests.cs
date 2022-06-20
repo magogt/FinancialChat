@@ -8,7 +8,7 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
   [TestClass()]
   public class ChatRoomRepositoryTests
   {
-    private static DbContext _ctx;
+    private static ChatDbContext _ctx;
     private static ChatRoomRepository _repository;
 
     [ClassInitialize]

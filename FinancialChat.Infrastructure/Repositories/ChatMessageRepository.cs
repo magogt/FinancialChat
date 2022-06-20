@@ -6,9 +6,9 @@ namespace FinancialChat.Infrastructure.Repositories
 {
   public class ChatMessageRepository : IChatMessageRepository
   {
-    private readonly DbContext ctx;
+    private readonly ChatDbContext ctx;
 
-    public ChatMessageRepository(DbContext ctx)
+    public ChatMessageRepository(ChatDbContext ctx)
     {
       this.ctx = ctx;
     }

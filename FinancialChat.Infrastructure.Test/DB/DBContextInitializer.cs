@@ -6,16 +6,16 @@ namespace FinancialChat.Infrastructure.Test.DB
 {
   internal static class DBContextInitializer
   {
-    static Infrastructure.DB.DbContext? context;
-    public static Infrastructure.DB.DbContext GetContext()
+    static Infrastructure.DB.ChatDbContext? context;
+    public static Infrastructure.DB.ChatDbContext GetContext()
     {
       if (context != null) return context;
 
-      DbContextOptions<Infrastructure.DB.DbContext> options;
-      var builder = new DbContextOptionsBuilder<Infrastructure.DB.DbContext>();
+      DbContextOptions<Infrastructure.DB.ChatDbContext> options;
+      var builder = new DbContextOptionsBuilder<Infrastructure.DB.ChatDbContext>();
       builder.UseInMemoryDatabase("chat-app");
       options = builder.Options;
-      context = new Infrastructure.DB.DbContext(options);
+      context = new Infrastructure.DB.ChatDbContext(options);
       context.AddRange(GetChatRooms());
       context.AddRange(GetChatMessages());
       context.SaveChanges();

@@ -7,7 +7,7 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
   [TestClass()]
   public class ChatMessageRepositoryTests
   {
-    private static DbContext _ctx;
+    private static ChatDbContext _ctx;
     private static ChatMessageRepository _repository;
 
     [ClassInitialize]
@@ -30,9 +30,9 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
     [TestMethod()]
     public async Task GetByRoomTest()
     {
-      var roomName = "room-1";
+      var room = 1;
       var expectedMessages = new string[] { "Hello World", "Hello Room 1" };
-      var result = await _repository.GetByRoom(roomName);
+      var result = await _repository.GetByRoom(room);
       Assert.IsNotNull(result);
       var messages = result.Select(x => x.Message).ToArray();
       Assert.AreEqual(2, messages.Count());
@@ -46,7 +46,7 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
       {
         Date = DateTime.Now,
         Message = "Hello test",
-        RoomId = "room-2",
+        RoomId = 2,
         User = "test"
       };
       var data = await _repository.Insert(message);
@@ -62,7 +62,7 @@ namespace FinancialChat.Infrastructure.Repositories.Tests
         Id = id,
         Date = DateTime.Now,
         Message = "Hello test modified",
-        RoomId = "room-2",
+        RoomId = 2,
         User = "test-modified"
       };
       var count = await _repository.Update(message);

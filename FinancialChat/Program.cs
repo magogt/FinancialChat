@@ -1,13 +1,18 @@
-using FinancialChat.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+
+using FinancialChat.Infrastructure.Repositories;
+using FinancialChat.State;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddDbContext<FinancialChat.Infrastructure.DB.ChatDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("ChatApp.SQLite"), b => b.MigrationsAssembly("FinancialChat.Infrastructure")));
+
+builder.Services.AddRepositories();
+builder.Services.AddScoped<AppState>();
 
 var app = builder.Build();
 

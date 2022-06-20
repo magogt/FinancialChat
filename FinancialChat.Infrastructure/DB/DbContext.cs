@@ -3,9 +3,9 @@ using FinancialChat.Core.Entities;
 
 namespace FinancialChat.Infrastructure.DB
 {
-  public class DbContext : Microsoft.EntityFrameworkCore.DbContext
+  public class ChatDbContext : DbContext
   {
-    public DbContext(DbContextOptions<DbContext> options) : base(options)
+    public ChatDbContext(DbContextOptions<ChatDbContext> options) : base(options)
     {
 
     }

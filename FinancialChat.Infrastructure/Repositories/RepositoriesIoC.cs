@@ -7,8 +7,8 @@ namespace FinancialChat.Infrastructure.Repositories
   {
     public static void AddRepositories(this IServiceCollection services)
     {
-      services.AddSingleton<IChatMessageRepository, ChatMessageRepository>();
-      services.AddSingleton<IChatRoomRepository, ChatRoomRepository>(); 
+      services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+      services.AddScoped<IChatRoomRepository, ChatRoomRepository>(); 
     }
   }
 }
