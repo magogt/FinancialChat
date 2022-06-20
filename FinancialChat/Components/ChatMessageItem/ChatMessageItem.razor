@@ -1,4 +1,7 @@
 ﻿@using FinancialChat.Core.Entities
+@using FinancialChat.State
+@inject AppState AppState
+
 <li class="clearfix">
     <div class="message @(IsCurrentUser ? "my-message" : "other-message float-right")">
         <div class="message-data-user text-start">@Message?.User</div>
@@ -14,7 +17,7 @@
     {
         get
         {
-            return Message?.User == "mgongora";
+            return Message?.User == AppState?.CurrentUser;
         }
     }
 

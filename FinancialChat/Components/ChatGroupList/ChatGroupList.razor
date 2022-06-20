@@ -38,6 +38,6 @@
     {
         var room = await RoomsRepository.Insert(new ChatRoom { Name = NewRoomName });
         NewRoomName = "";
-       // await InvokeAsync(StateHasChanged);
+       await OnChatRoomListChanged.InvokeAsync();
     }
 }
