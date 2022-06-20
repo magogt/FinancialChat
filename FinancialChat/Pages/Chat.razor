@@ -1,41 +1,44 @@
 ﻿@page "/chat"
+@using FinancialChat.Components.ChatGroupItem
 @using FinancialChat.Components.ChatGroupList
 @using FinancialChat.Components.ChatMessageList
-@implements IAsyncDisposable
+@using FinancialChat.Core.Entities
+@using FinancialChat.Core.Repositories
+@using FinancialChat.State
+@implements IDisposable
+@inject AppState AppState
+@inject IChatRoomRepository RoomsRepository
+@inject IChatMessageRepository MessagesRepository
 
-<PageTitle>Financial Chat @roomName</PageTitle>
-
-@*<h1>Financial Chat</h1>*@
-
-<p role="status">@roomName</p>
+<PageTitle>Financial Chat @AppState?.ActiveRoom?.Name</PageTitle>
 
 <div class="container">
     <div class="row clearfix">
         <div class="col-lg-12">
-            <div class="card chat-app">            
-                    <ChatGroupList />                
+            <div class="card chat-app">
+                <ChatGroupList Rooms="Rooms" OnChatRoomListChanged="GetChatRoomList" />
                 <div class="chat">
                     <div class="chat-header clearfix">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
-                                    <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="avatar">
-                                </a>
-                                <div class="chat-about">
-                                    <h6 class="m-b-0">Aiden Chavez</h6>
-                                    <small>Last seen: 2 hours ago</small>
-                                </div>
+                        @if (AppState?.ActiveRoom != null)
+                        {
+                            <ChatGroupItem Group="AppState?.ActiveRoom" />
+                        }
+                    </div>
+                    <div class="chat-history">
+                        @if (AppState?.ActiveRoom != null)
+                        {
+                            <ChatMessageList />
+                        }
+                    </div>
+                    @if (AppState?.ActiveRoom != null)
+                    {
+                        <div class="chat-message clearfix">
+                            <div class="input-group mb-0">
+                                <input @bind-value="MessageText" type="text" class="form-control" placeholder="Enter text here...">
+                                <span @onclick="SendMessage" class="input-group-text"><i class="fa fa-send"></i></span>
                             </div>
-
                         </div>
-                    </div>
-                    <ChatMessageList />
-                    <div class="chat-message clearfix">
-                        <div class="input-group mb-0">
-                            <span class="input-group-text"><i class="fa fa-send"></i></span>
-                            <input type="text" class="form-control" placeholder="Enter text here...">
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -44,20 +47,40 @@
 
 
 @code {
-    [Parameter]
-    public string RoomId { get; set; }
-    private string roomName = "";
-
+    private string MessageText { get; set; }
+    private IEnumerable<ChatRoom> Rooms { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        //Get group Info
-
-
+        AppState.OnChangeActiveRoom += StateHasChanged;
+        //Get groups Info
+        await GetChatRoomList();
         //connect
     }
 
-    public async ValueTask DisposeAsync()
+    public async Task GetChatRoomList()
     {
+        Rooms = await RoomsRepository.GetAll();
+        if (AppState?.ActiveRoom?.Id != null)
+        {
+            AppState.SetActiveRoom(Rooms.FirstOrDefault(r => r.Id == AppState.ActiveRoom.Id));
+        }
+    }
 
+    public async Task SendMessage()
+    {
+        await MessagesRepository.Insert(new ChatMessage
+            {
+                Date = DateTime.Now,
+                Message = MessageText,
+                RoomId = AppState.ActiveRoom.Id,
+                User = "mgongora"
+            });
+            MessageText = "";
+            StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AppState.OnChangeActiveRoom -= StateHasChanged;
     }
 }

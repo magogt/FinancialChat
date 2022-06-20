@@ -1,26 +1,43 @@
 ﻿@using FinancialChat.Components.ChatGroupItem
 @using FinancialChat.Core.Entities
+@using FinancialChat.Core.Repositories
+@inject IChatRoomRepository RoomsRepository 
+
 <div id="plist" class="people-list">
     <div class="input-group">
-    <span class="input-group-text"><i class="fa fa-search"></i></span>
-    <input type="text" class="form-control" placeholder="Search...">
+        <input @bind-value="NewRoomName" type="text" class="form-control" placeholder="Add room...">
+        <span @onclick="AddRoom" class="input-group-text"><i class="fa fa-plus"></i></span>
     </div>
     <ul class="list-unstyled chat-list mt-2 mb-0">
-        @if(Rooms != null)
+        @if (Rooms != null)
         {
-            foreach(var r in Rooms)
-            {                
-              <ChatGroupItem Group="r"/>
+            foreach (var r in Rooms)
+            {
+              <li>
+                <ChatGroupItem Group="r" OnChatRoomDeleted="ChatRoomDeleted" />
+              </li>
             }
         }
     </ul>
 </div>
 
 @code {
-  private IEnumerable<ChatRoom> Rooms = new List<ChatRoom>
-      {
-        new ChatRoom {Name = "room-1"},
-        new ChatRoom {Name = "room-2"},
-        new ChatRoom { Name = "room-3"}
-      };
+    [Parameter]
+    public IEnumerable<ChatRoom> Rooms { get; set; }
+    [Parameter]
+    public EventCallback OnChatRoomListChanged { get; set; }
+
+    public string NewRoomName { get; set; }
+
+    public async void ChatRoomDeleted()
+    {
+        await OnChatRoomListChanged.InvokeAsync();
+    }
+
+    public async void AddRoom()
+    {
+        var room = await RoomsRepository.Insert(new ChatRoom { Name = NewRoomName });
+        NewRoomName = "";
+       // await InvokeAsync(StateHasChanged);
+    }
 }

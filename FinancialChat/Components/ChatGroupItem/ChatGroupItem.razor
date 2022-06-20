@@ -1,13 +1,43 @@
 ﻿@using FinancialChat.Core.Entities
+@using FinancialChat.Core.Repositories
+@using State
+@implements IDisposable
+@inject AppState AppState
+@inject IChatRoomRepository RoomsRepository
 
-<li class="clearfix active">
+<div class="clearfix @(Group?.Id == AppState?.ActiveRoom?.Id ? "active" : "")" @onclick="SetSelectedChatRoom">
     <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar">
     <div class="about">
-        <div class="name">@Group?.Name</div>       
+        <div class="name">@Group?.Name</div>
+        @if(OnChatRoomDeleted.HasDelegate){<div @onclick:stopPropagation="true" @onclick="DeleteChatRoom" class="badge bg-danger"> <i class="fa fa-trash"></i> </div>}
     </div>
-</li>
+</div>
 
 @code {
-    [Parameter] 
+    [Parameter]
     public ChatRoom? Group { get; set; }
+
+    [Parameter]
+    public EventCallback OnChatRoomDeleted { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AppState.OnChangeActiveRoom += StateHasChanged;
+    }
+
+    public void SetSelectedChatRoom()
+    {
+        AppState.SetActiveRoom(Group);
+    }
+
+    public async Task DeleteChatRoom()
+    {
+        await RoomsRepository.Delete(Group.Id);        
+        await OnChatRoomDeleted.InvokeAsync();
+    }
+
+    public void Dispose()
+    {
+        AppState.OnChangeActiveRoom -= StateHasChanged;
+    }
 }
