@@ -1,18 +1,28 @@
 ﻿using FinancialChat.Core.Entities;
+using FinancialChat.Core.Repositories;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
 
 namespace FinancialChat.Bussiness.Services
 {
   public class FinancialChatHubService
   {
     private HubConnection? hubConnection;
+    private readonly string hubUrl;
+    private readonly IChatMessageRepository messageRepository;
 
-    public async Task<HubConnection> Start(string url)
+    public FinancialChatHubService(IConfiguration config, IChatMessageRepository messageRepository)
     {
+      hubUrl = config["chatHubUrl"] ?? "";
+      this.messageRepository = messageRepository;
+    }
+    public async Task<HubConnection> Start()
+    {
+
       if (hubConnection == null)
       {
         hubConnection = new HubConnectionBuilder()
-              .WithUrl(url)
+              .WithUrl(hubUrl)
               .WithAutomaticReconnect()
               .Build();
         await hubConnection.StartAsync();
@@ -22,7 +32,7 @@ namespace FinancialChat.Bussiness.Services
 
     public async Task JoinGroup(int group)
     {
-      if(hubConnection != null)
+      if (hubConnection != null)
       {
         await hubConnection.InvokeAsync("AddToGroup", group.ToString());
       }
@@ -30,6 +40,7 @@ namespace FinancialChat.Bussiness.Services
 
     public async Task SendMessage(ChatMessage message)
     {
+      var msg = await messageRepository.Insert(message);
       if (hubConnection != null)
       {
         await hubConnection.InvokeAsync("SendMessage", message);

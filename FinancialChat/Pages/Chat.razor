@@ -1,4 +1,5 @@
 ﻿@page "/chat"
+@using FinancialChat.Bussiness.ChatBot
 @using FinancialChat.Components.ChatGroupItem
 @using FinancialChat.Components.ChatGroupList
 @using FinancialChat.Components.ChatMessageList
@@ -13,6 +14,7 @@
 @inject IChatRoomRepository RoomsRepository
 @inject IChatMessageRepository MessagesRepository
 @inject FinancialChatHubService ChatHubService
+@inject StockDataMessageProducer StockMessage;
 
 <PageTitle>Financial Chat @AppState?.ActiveRoom?.Name</PageTitle>
 
@@ -63,7 +65,7 @@
         await GetChatRoomList();
 
         //Connect
-        hub = await ChatHubService.Start(NavManager.ToAbsoluteUri("/chathub").AbsoluteUri);
+        hub = await ChatHubService.Start();
         hub.On<ChatMessage>("ReceiveMessage", ReceiveMessage);
     }
 
@@ -87,14 +89,21 @@
 
     public async Task SendMessage()
     {
-        var msg = await MessagesRepository.Insert(new ChatMessage
+        var msg = new ChatMessage
             {
                 Date = DateTime.Now,
                 Message = MessageText,
                 RoomId = AppState.ActiveRoom.Id,
-                User = "mgongora"
-            });
-        await ChatHubService.SendMessage(msg);
+                User = AppState.CurrentUser
+            };
+        if (MessageText.StartsWith("/stock="))
+        {
+            StockMessage.SendMessage(msg);
+        }
+        else
+        {           
+            await ChatHubService.SendMessage(msg);
+        }
         MessageText = "";
     }
 

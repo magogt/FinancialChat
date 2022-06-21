@@ -1,4 +1,5 @@
 
+using FinancialChat.Bussiness.ChatBot;
 using FinancialChat.Bussiness.Services;
 using FinancialChat.Hubs;
 using FinancialChat.Infrastructure.Repositories;
@@ -20,6 +21,8 @@ builder.Services.AddResponseCompression(opts =>
 builder.Services.AddDbContext<FinancialChat.Infrastructure.DB.ChatDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("ChatApp.SQLite"), b => b.MigrationsAssembly("FinancialChat.Infrastructure")));
 
 builder.Services.AddRepositories();
+builder.Services.AddSingleton(new RabbitMQClient());
+builder.Services.AddScoped<StockDataMessageProducer>();
 builder.Services.AddScoped<FinancialChatHubService>();
 builder.Services.AddScoped<AppState>();
 
