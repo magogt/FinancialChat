@@ -123,12 +123,12 @@ body {
 
   .people-list .chat-list img {
     width: 45px;
-    border-radius: 50%
+    border-radius: 0
   }
 
   .people-list img {
     float: left;
-    border-radius: 50%
+    border-radius: 0
   }
 
   .people-list .about {
@@ -148,7 +148,7 @@ body {
 
   .chat .chat-header img {
     float: left;
-    border-radius: 40px;
+    border-radius: 0;
     width: 40px
   }
 
@@ -180,7 +180,7 @@ body {
   }
 
     .chat .chat-history .message-data img {
-      border-radius: 40px;
+      border-radius: 0;
       width: 40px
     }
 

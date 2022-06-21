@@ -1,42 +1,46 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using FinancialChat.Core.Entities;
+using Microsoft.AspNetCore.SignalR.Client;
 
-namespace FinancialChat.Core.Services
+namespace FinancialChat.Bussiness.Services
 {
   public class FinancialChatHubService
   {
     private HubConnection? hubConnection;
 
-    public async Task<HubConnection> Connect(string url)
+    public async Task<HubConnection> Start(string url)
     {
-      hubConnection = new HubConnectionBuilder()
-            .WithUrl(url)
-            .WithAutomaticReconnect()
-            .Build();
-      await hubConnection.StartAsync();
+      if (hubConnection == null)
+      {
+        hubConnection = new HubConnectionBuilder()
+              .WithUrl(url)
+              .WithAutomaticReconnect()
+              .Build();
+        await hubConnection.StartAsync();
+      }
       return hubConnection;
     }
 
-    public async Task JoinGroup(string group)
+    public async Task JoinGroup(int group)
     {
       if(hubConnection != null)
       {
-        await hubConnection.InvokeAsync("AddToGroup", group);
+        await hubConnection.InvokeAsync("AddToGroup", group.ToString());
       }
     }
 
-    public async Task SendMessage(string group, string user, string message)
+    public async Task SendMessage(ChatMessage message)
     {
       if (hubConnection != null)
       {
-        await hubConnection.InvokeAsync("SendMessage", group, user, message);
+        await hubConnection.InvokeAsync("SendMessage", message);
       }
     }
 
-    public async Task LeaveGroup(string group)
+    public async Task LeaveGroup(int group)
     {
       if (hubConnection != null)
       {
-        await hubConnection.InvokeAsync("LeaveGroup", group);
+        await hubConnection.InvokeAsync("LeaveGroup", group.ToString());
       }
     }
   }

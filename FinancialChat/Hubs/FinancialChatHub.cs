@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using FinancialChat.Core.Entities;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FinancialChat.Hubs
 {
@@ -9,9 +10,9 @@ namespace FinancialChat.Hubs
       await Groups.AddToGroupAsync(Context.ConnectionId, group);
     }
 
-    public  async Task SendMessage(string group, string user, string message)
+    public  async Task SendMessage(ChatMessage message)
     {
-      await Clients.Group(group).SendAsync("ReceiveMessage", user, message);
+      await Clients.Group(message.RoomId.ToString()).SendAsync("ReceiveMessage", message);
     }
 
     public async Task LeaveGroup(string group)

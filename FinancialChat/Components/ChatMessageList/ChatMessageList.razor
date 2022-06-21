@@ -17,27 +17,19 @@
 
 
 @code {
-    private IEnumerable<ChatMessage>? Messages;
+    [Parameter]
+    public IEnumerable<ChatMessage>? Messages { get; set; }
 
     protected override void OnInitialized()
     {
-        LoadHistory();
-        AppState.OnChangeActiveRoom += LoadHistory;
+        //LoadHistory();
+        //AppState.OnChangeActiveRoom += LoadHistory;
     }
 
-    private async void LoadHistory()
-    {
-        if (AppState?.ActiveRoom != null)
-        {
-            var roomId = AppState.ActiveRoom.Id;
-            Messages = await MessagesRepository.GetByRoom(roomId);
-            await InvokeAsync(StateHasChanged);
-        }
-
-    }
+    
 
     public void Dispose()
     {
-        AppState.OnChangeActiveRoom -= LoadHistory;
+        //AppState.OnChangeActiveRoom -= LoadHistory;
     }
 }

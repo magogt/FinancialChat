@@ -4,11 +4,15 @@
 @using FinancialChat.Components.ChatMessageList
 @using FinancialChat.Core.Entities
 @using FinancialChat.Core.Repositories
+@using FinancialChat.Bussiness.Services
 @using FinancialChat.State
+@using Microsoft.AspNetCore.SignalR.Client
 @implements IDisposable
+@inject NavigationManager NavManager
 @inject AppState AppState
 @inject IChatRoomRepository RoomsRepository
 @inject IChatMessageRepository MessagesRepository
+@inject FinancialChatHubService ChatHubService
 
 <PageTitle>Financial Chat @AppState?.ActiveRoom?.Name</PageTitle>
 
@@ -27,7 +31,7 @@
                     <div class="chat-history">
                         @if (AppState?.ActiveRoom != null)
                         {
-                            <ChatMessageList />
+                            <ChatMessageList Messages="Messages" />
                         }
                     </div>
                     @if (AppState?.ActiveRoom != null)
@@ -47,16 +51,20 @@
 
 
 @code {
-    private string MessageText { get; set; }
-    private IEnumerable<ChatRoom> Rooms { get; set; }
+    private IEnumerable<ChatRoom> Rooms;
+    private List<ChatMessage> Messages;
+    private string MessageText;
+    private HubConnection hub;
+
     protected override async Task OnInitializedAsync()
     {
-        AppState.OnChangeActiveRoom += StateHasChanged;
+        AppState.OnChangeActiveRoom += ActiveRoomChanged;
         //Get groups Info
         await GetChatRoomList();
-        
-        //Connect
 
+        //Connect
+        hub = await ChatHubService.Start(NavManager.ToAbsoluteUri("/chathub").AbsoluteUri);
+        hub.On<ChatMessage>("ReceiveMessage", ReceiveMessage);
     }
 
     public async Task GetChatRoomList()
@@ -64,25 +72,51 @@
         Rooms = await RoomsRepository.GetAll();
         if (AppState?.ActiveRoom?.Id != null)
         {
-            AppState.SetActiveRoom(Rooms.FirstOrDefault(r => r.Id == AppState.ActiveRoom.Id));   
+            AppState.SetActiveRoom(Rooms.FirstOrDefault(r => r.Id == AppState.ActiveRoom.Id));
+        }
+    }
+
+    private async Task GetChatMessageList(int roomId)
+    {
+        if (AppState?.ActiveRoom != null)
+        {
+            Messages = (await MessagesRepository.GetByRoom(roomId)).ToList();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
     public async Task SendMessage()
     {
-        await MessagesRepository.Insert(new ChatMessage
+        var msg = await MessagesRepository.Insert(new ChatMessage
             {
                 Date = DateTime.Now,
                 Message = MessageText,
                 RoomId = AppState.ActiveRoom.Id,
                 User = "mgongora"
             });
-            MessageText = "";
-            StateHasChanged();
+        await ChatHubService.SendMessage(msg);
+        MessageText = "";
+    }
+
+    private async Task ReceiveMessage(ChatMessage message)
+    {
+        Messages.Add(message);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async void ActiveRoomChanged(ChatRoom? previous, ChatRoom current)
+    {
+        if (previous != null)
+        {
+            await ChatHubService.LeaveGroup(previous.Id);
+        }
+        await ChatHubService.JoinGroup(current.Id);
+        await InvokeAsync(StateHasChanged);
+        await GetChatMessageList(current.Id);
     }
 
     public void Dispose()
     {
-        AppState.OnChangeActiveRoom -= StateHasChanged;
+        AppState.OnChangeActiveRoom -= ActiveRoomChanged;
     }
 }
