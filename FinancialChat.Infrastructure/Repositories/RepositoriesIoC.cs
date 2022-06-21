@@ -5,10 +5,11 @@ namespace FinancialChat.Infrastructure.Repositories
 {
   public static class RepositoriesIoC
   {
-    public static void AddRepositories(this IServiceCollection services)
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
       services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
-      services.AddScoped<IChatRoomRepository, ChatRoomRepository>(); 
+      services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+      return services;
     }
   }
 }

@@ -1,6 +1,8 @@
 ﻿using FinancialChat.Bussiness.Services;
+using FinancialChat.Core.ApiClients;
 using FinancialChat.Core.ChatBot;
 using FinancialChat.Core.Entities;
+using FinancialChat.Core.Entities.Extensions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -14,17 +16,19 @@ namespace FinancialChat.Bussiness.ChatBot
     const string queueName = "financial-chat";
     private readonly string connectionString;
     private readonly FinancialChatHubService chatHubService;
+    private readonly IStockDataClient stockDataClient;
     private IConnection? connection;
     private IModel? channel;
     private ManualResetEvent resetEvent = new ManualResetEvent(false);
 
-    public StockDataMessageConsumer(IConfiguration config, FinancialChatHubService chatHubService)
+    public StockDataMessageConsumer(IConfiguration config, FinancialChatHubService chatHubService, IStockDataClient stockDataClient)
     {
       connectionString = config["rabbitMQConnection"];
       this.chatHubService = chatHubService;
+      this.stockDataClient = stockDataClient;
     }
 
-    
+
     public void Start()
     {
       var factory = new ConnectionFactory() { Uri = new Uri(connectionString) };
@@ -39,14 +43,22 @@ namespace FinancialChat.Bussiness.ChatBot
       {
         var body = deliveryEventArgs.Body.ToArray();
         var message = Encoding.UTF8.GetString(body);
-        Console.WriteLine("** Received message: {0} by Consumer thread **", message);
         var msg = JsonConvert.DeserializeObject<ChatMessage>(message);
-        msg.Message = msg.Message += " processed!";
-        await chatHubService.SendMessage(msg);
+        var stock = msg.GetStockName();
+        Console.WriteLine("** Processing quote: {0} **", stock);
+        var stockData = await stockDataClient.GetStockData(stock);
+
+        if (stockData != null)
+        {
+          msg.Message = $"{stockData.Symbol} quote is ${stockData.Close ?? stockData.Open} per share";
+          Console.WriteLine("**** {0}", msg.Message);
+          await chatHubService.SendMessage(msg);
+        }else
+          {
+          Console.WriteLine("**** Couldn't get data");
+          }
         channel.BasicAck(deliveryEventArgs.DeliveryTag, false);
       };
-
-      // start consuming
       _ = channel.BasicConsume(consumer, queueName);
     }
 
@@ -58,6 +70,5 @@ namespace FinancialChat.Bussiness.ChatBot
       connection?.Close();
       connection = null;
     }
-
   }
 }

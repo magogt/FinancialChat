@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FinancialChat.Bussiness\FinancialChat.Bussiness.csproj" />
+    <ProjectReference Include="..\FinancialChat.Infrastructure\FinancialChat.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,8 @@
 ﻿using FinancialChat.Bussiness.ChatBot;
 using FinancialChat.Bussiness.Services;
+using FinancialChat.Core.ApiClients;
+using FinancialChat.Infrastructure.ApiClients;
+using FinancialChat.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -21,12 +24,13 @@ namespace FinancialChat.Bot
         .AddSingleton<IConfiguration>(configuration.Build())
         .AddScoped<FinancialChatHubService>()
         .AddScoped<StockDataMessageConsumer>()
+        .AddScoped<IStockDataClient, StockDataClient>()
         .BuildServiceProvider();
 
       var stockDataConsumer = serviceProvider.GetService<StockDataMessageConsumer>();
       stockDataConsumer.Start();
 
-      Console.WriteLine($"Press any key to exit");
+      Console.WriteLine($"Chat Bot started, waiting for messages!!");
       Console.ReadKey();
     }
   }

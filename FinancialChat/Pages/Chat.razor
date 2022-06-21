@@ -8,6 +8,7 @@
 @using FinancialChat.Bussiness.Services
 @using FinancialChat.State
 @using Microsoft.AspNetCore.SignalR.Client
+@using FinancialChat.Core.Entities.Extensions;
 @implements IDisposable
 @inject NavigationManager NavManager
 @inject AppState AppState
@@ -96,12 +97,13 @@
                 RoomId = AppState.ActiveRoom.Id,
                 User = AppState.CurrentUser
             };
-        if (MessageText.StartsWith("/stock="))
+        if (msg.GetStockName().Length > 0)
         {
             StockMessage.SendMessage(msg);
         }
         else
-        {           
+        {
+            msg = await MessagesRepository.Insert(msg);
             await ChatHubService.SendMessage(msg);
         }
         MessageText = "";
