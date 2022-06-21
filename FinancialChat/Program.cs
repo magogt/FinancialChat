@@ -1,6 +1,8 @@
 
+using FinancialChat.Hubs;
 using FinancialChat.Infrastructure.Repositories;
 using FinancialChat.State;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddResponseCompression(opts =>
+{
+  opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+      new[] { "application/octet-stream" });
+});
 
 builder.Services.AddDbContext<FinancialChat.Infrastructure.DB.ChatDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("ChatApp.SQLite"), b => b.MigrationsAssembly("FinancialChat.Infrastructure")));
 
@@ -31,6 +38,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapBlazorHub();
+app.MapHub<FinancialChatHub>("/chathub");
 app.MapFallbackToPage("/_Host");
 
 app.Run();

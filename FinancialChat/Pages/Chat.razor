@@ -54,7 +54,9 @@
         AppState.OnChangeActiveRoom += StateHasChanged;
         //Get groups Info
         await GetChatRoomList();
-        //connect
+        
+        //Connect
+
     }
 
     public async Task GetChatRoomList()
@@ -62,8 +64,7 @@
         Rooms = await RoomsRepository.GetAll();
         if (AppState?.ActiveRoom?.Id != null)
         {
-            AppState.SetActiveRoom(Rooms.FirstOrDefault(r => r.Id == AppState.ActiveRoom.Id));
-            
+            AppState.SetActiveRoom(Rooms.FirstOrDefault(r => r.Id == AppState.ActiveRoom.Id));   
         }
     }
 

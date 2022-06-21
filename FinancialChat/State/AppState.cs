@@ -16,7 +16,7 @@ namespace FinancialChat.State
         NotifyActiveRoomChanged();
       }
     }
-
     private void NotifyActiveRoomChanged() =>  OnChangeActiveRoom?.Invoke();
+
   }
 }
