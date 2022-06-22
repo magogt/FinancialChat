@@ -4,8 +4,12 @@ namespace FinancialChat.State
 {
   public class AppState
   {
+    public AppState(IHttpContextAccessor ctx)
+    {
+      CurrentUser = ctx.HttpContext?.User?.Identity?.Name ?? "";
+    }
     public ChatRoom? ActiveRoom { get; private set; }
-    public string? CurrentUser { get; private set; } = "mgongora";
+    public string? CurrentUser { get; private set; } 
     public event Action<ChatRoom?, ChatRoom>? OnChangeActiveRoom;
 
     public void SetActiveRoom(ChatRoom? room)

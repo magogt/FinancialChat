@@ -1,9 +1,15 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Financial Chat</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+<AuthorizeView>
+    <NotAuthorized>
+        <h1>Financial Chat</h1>
+        Welcome to your financial chat app.
+        <SurveyPrompt Title="Do you want to start? " />
+    </NotAuthorized>
+    <Authorized>
+        <Chat />
+    </Authorized>
+</AuthorizeView>
