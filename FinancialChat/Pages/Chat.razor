@@ -8,6 +8,7 @@
 @using FinancialChat.State
 @using Microsoft.AspNetCore.SignalR.Client
 @using FinancialChat.Core.Entities.Extensions;
+@using Microsoft.JSInterop
 @implements IDisposable
 @inject NavigationManager NavManager
 @inject AppState AppState
@@ -15,6 +16,8 @@
 @inject IChatMessageRepository MessagesRepository
 @inject FinancialChatHubService ChatHubService
 @inject StockDataMessageProducer StockMessage;
+@inject IJSRuntime JS
+
 
 <PageTitle>Financial Chat @AppState?.ActiveRoom?.Name</PageTitle>
 
@@ -30,7 +33,7 @@
                             <ChatGroupItem Group="AppState?.ActiveRoom" />
                         }
                     </div>
-                    <div class="chat-history">
+                    <div class="chat-history" @ref="ChatHistoryRef">
                         @if (AppState?.ActiveRoom != null)
                         {
                             <ChatMessageList Messages="Messages" />
@@ -40,7 +43,7 @@
                     {
                         <div class="chat-message clearfix">
                             <div class="input-group mb-0">
-                                <input @bind-value="MessageText" type="text" class="form-control" placeholder="Enter text here...">
+                                <input @bind-value="MessageText" @onkeyup="OnMessageTextKey" type="text" class="form-control" placeholder="Enter text here...">
                                 <span @onclick="SendMessage" class="input-group-text"><i class="fa fa-send"></i></span>
                             </div>
                         </div>
@@ -57,6 +60,7 @@
     private List<ChatMessage> Messages;
     private string MessageText;
     private HubConnection hub;
+    ElementReference ChatHistoryRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,8 +88,17 @@
         {
             Messages = (await MessagesRepository.GetByRoom(roomId)).ToList();
             await InvokeAsync(StateHasChanged);
+            await ScrollToEnd();
         }
     }
+
+    public async Task OnMessageTextKey(KeyboardEventArgs evt)
+    {
+        if (evt.Code == "Enter" || evt.Code == "NumpadEnter")
+        {
+            await SendMessage();
+        }
+    } 
 
     public async Task SendMessage()
     {
@@ -112,6 +125,7 @@
     {
         Messages.Add(message);
         await InvokeAsync(StateHasChanged);
+        await ScrollToEnd();
     }
 
     public async void ActiveRoomChanged(ChatRoom? previous, ChatRoom current)
@@ -123,6 +137,11 @@
         await ChatHubService.JoinGroup(current.Id);
         await InvokeAsync(StateHasChanged);
         await GetChatMessageList(current.Id);
+    }
+
+    private async Task ScrollToEnd()
+    {
+        await JS.InvokeVoidAsync("scrollToEnd", new object[] { ChatHistoryRef });
     }
 
     public void Dispose()
