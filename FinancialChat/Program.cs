@@ -6,6 +6,10 @@ using FinancialChat.Infrastructure.Repositories;
 using FinancialChat.State;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using FinancialChat.Infrastructure.DB;
+using FinancialChat.Areas.Identity;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +22,12 @@ builder.Services.AddResponseCompression(opts =>
       new[] { "application/octet-stream" });
 });
 
-builder.Services.AddDbContext<FinancialChat.Infrastructure.DB.ChatDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("ChatApp.SQLite"), b => b.MigrationsAssembly("FinancialChat.Infrastructure")));
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<ChatDbContext>();
+builder.Services.AddDbContext<ChatDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("ChatApp.SQLite"), b => b.MigrationsAssembly("FinancialChat.Infrastructure")));
 
+builder.Services.AddRazorPages();
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddRepositories();
 builder.Services.AddScoped<StockDataMessageProducer>();
 builder.Services.AddScoped<FinancialChatHubService>();
@@ -40,7 +48,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapBlazorHub();
 app.MapHub<FinancialChatHub>("/chathub");
 app.MapFallbackToPage("/_Host");
